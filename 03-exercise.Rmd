@@ -1,0 +1,77 @@
+---
+title: "Exercice 3"
+author: "Ton Nom"
+date: "Date"
+output: html_document
+---
+
+# Tâche 1 : Réflexion
+
+Mettez votre réflexion ici
+
+
+# Tâche 2 : Le Seigneur des Anneaux
+
+## Charger et nettoyer les données
+
+Nous chargeons, restructurons et nettoyons d'abord les données.
+
+```{r load-clean-data, warnings=FALSE, message=FALSE}
+# Vous n'aurez besoin que de la bibliothèque tidyverse pour cet exercice
+library(tidyverse)
+
+# Charger les jeux de données séparés
+communauté <- read_csv("data/The_Fellowship_Of_The_Ring.csv")
+tt <- read_csv("data/The_Two_Towers.csv")
+rotk <- read_csv("data/The_Return_Of_The_King.csv")
+
+# bind_rows() empile les blocs de données les uns sur les autres
+lotr_wide <- bind_rows(communauté, tt, rotk) %>%
+  # Faites de la colonne Film une variable catégorielle (facteur) et placez-la dans
+  # ordonner l'apparition des catégories (pour que les films soient dans le bon ordre)
+  mutate(Film = fct_inorder(Film))
+
+# Rendez ces données larges bien rangées
+lotr <- lotr_wide %>%
+  # C'est la nouvelle façon de rendre les données longues
+  pivot_longer(cols = c(Female, Male),
+               names_to = "Sexe", values_to = "Mots")
+```
+
+
+## Course
+
+Une certaine race domine-t-elle toute la trilogie ? (indice : regrouper par `Race`)
+
+```{r}
+# Faites des trucs ici
+```
+
+
+## Genre et cinéma
+
+Est-ce qu'un certain genre domine un film ? (lol bien sûr que c'est le cas, mais quand même, représentez-le graphiquement) (Astuce : groupez à la fois par `Gender` et `Film`.) Expérimentez avec le remplissage par `Gender` ou `Film` et le facettage par `Gender` ou `Film`.
+
+```{r}
+# Faites des trucs ici
+```
+
+
+## Course et cinéma
+
+La race dominante diffère-t-elle d'un film à l'autre ? (Astuce : regrouper à la fois par `Race` et `Film`.) Expérimentez avec le remplissage par `Race` ou `Film` et le facettage par `Race` ou `Film`.
+
+```{r}
+# Faites des trucs ici
+```
+
+
+## Race et genre et film
+
+Créez un graphique qui visualise simultanément le nombre de mots prononcés par race, sexe et film. Utilisez le bloc de données "lotr" complet. Vous n'avez pas besoin de créer un nouvel ensemble de données résumées (avec `group_by(Race, Gender, Film)`) car les données d'origine ont déjà une ligne pour chacune d'entre elles (vous pourriez créer un ensemble de données résumées, mais il serait identique à la version complète).
+
+Vous devez afficher `Race`, `Gender` et `Film` en même temps, mais vous n'avez que deux esthétiques possibles (`x` et `fill`), vous devrez donc également faire face à la troisième. Jouez avec différentes combinaisons (par exemple, essayez `x = Race`, puis `x = Film`) jusqu'à ce que vous en trouviez une qui raconte l'histoire la plus claire. Pour vous amuser, ajoutez un calque `labs()` pour ajouter un titre, un sous-titre et une légende.
+
+```{r}
+# Faites des trucs ici
+```
