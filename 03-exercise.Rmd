@@ -45,6 +45,23 @@ Une certaine race domine-t-elle toute la trilogie ? (indice : regrouper par `Rac
 
 ```{r}
 # Faites des trucs ici
+dominant_race <- lotr %>%
+  group_by(Race) %>%
+  summarise(Mots = sum(Mots, na.rm = TRUE))  %>%
+  arrange(desc(Mots))
+dominant_race
+
+ggplot(data=lotr,aes(x=Race,y=Mots,fill=Race))+
+  geom_bar(stat="identity")+
+  labs(
+    title = "Race dominante dans le seigneur des Anneaux",
+    subtitle = "Analyse des dialogues dans Le Seigneur des Anneaux",
+    x = "Race",
+    y = "Nombre de mots",
+    fill = "Genre"
+  )+
+  theme_minimal()
+ 
 ```
 
 
@@ -54,6 +71,17 @@ Est-ce qu'un certain genre domine un film ? (lol bien sûr que c'est le cas, ma
 
 ```{r}
 # Faites des trucs ici
+  ggplot(data=lotr,aes(x=Sexe,y=Mots,fill=Sexe)) +
+  geom_bar(stat="identity",position = "dodge") +
+  facet_wrap(~Film)+
+  labs(
+    title = "Genre dominant par opus dans le seigneur des Anneaux",
+    subtitle = "Analyse des dialogues dans Le Seigneur des Anneaux",
+    x = "Genre",
+    y = "Nombre de mots",
+    fill = "Genre"
+  )+
+  theme_minimal()
 ```
 
 
@@ -63,6 +91,19 @@ La race dominante diffère-t-elle d'un film à l'autre ? (Astuce : regrouper �
 
 ```{r}
 # Faites des trucs ici
+ggplot(data=lotr,aes(x=Race,y=Mots,fill=Race)) +
+  geom_bar(stat="identity",position = "dodge") +
+  facet_wrap(~Film)+
+  labs(
+    title = "Race dominante par opus dans le seigneur des Anneaux",
+    subtitle = "Analyse des dialogues dans Le Seigneur des Anneaux",
+    x = "Race",
+    y = "Nombre de mots",
+    fill = "Race"
+  )+
+  theme_minimal()
+
+
 ```
 
 
@@ -74,4 +115,16 @@ Vous devez afficher `Race`, `Gender` et `Film` en même temps, mais vous n'avez 
 
 ```{r}
 # Faites des trucs ici
+ggplot(data = lotr, aes(x=Race,y=Mots,fill=Sexe)) +
+  geom_bar(position = "dodge",stat="identity")+
+  facet_wrap(~Film,nrow=1)+
+  labs(
+    title = "Nombre de mots prononcés par Race, Sexe et Film",
+    subtitle = "Analyse des dialogues dans Le Seigneur des Anneaux",
+    x = "Race",
+    y = "Nombre de mots",
+    fill = "Sexe"
+  ) +
+  theme_minimal()
+  
 ```
