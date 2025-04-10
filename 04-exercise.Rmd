@@ -1,0 +1,120 @@
+---
+title: "Exercice 4"
+author: "Wilson FOTSING"
+date: "2025-04-06"
+output: html_document
+---
+
+# Tâche 1 : Réflexion
+
+En analyse de données, la représentation visuelle des comptes et des proportions joue un rôle fondamental pour faciliter la compréhension et la communication des résultats.
+
+Bien que  les diagrammes à barres ou les camemberts sont largement utilisés, ils ne sont pas toujours les plus appropriés selon le contexte. il y a des bonnes pratiques qu'il faut utiliser et des mauvaises pratiques à éviter.
+
+
+1- Toujours commencer les barres à zéro pour éviter les biais visuels ;
+
+2- Éviter les barres pour des statistiques descriptives continues (ex. moyennes) ;
+
+3- Prioriser les diagrammes en barres au détriment des diagrammes circulaire ;
+
+4- Il est douvent recommandé de mettre des points aléatoires (jitter plots) avec geom_point()
+
+5- Même si on utilise des Boxplots ou des violentPlots pour visualiser, il est aussi parfois necessaire d'ajouter les points sur le graphiques pour capturer la distribution des points
+
+
+# Tâche 2 : Construction pandémique essentielle
+
+## Charger et nettoyer les données
+
+```{r load-clean-data, avertissement=FALSE, message=FALSE}
+library(tidyverse)
+
+essential_raw <- read_csv("data/EssentialConstruction.csv")
+
+# Nettoyage des données
+essentiel <- essential_raw %>%
+  mutate(
+    ARRONDISSEMENT = str_to_title(BOROUGH),        
+    ARRONDISSEMENT = factor(ARRONDISSEMENT),      
+    CATÉGORIE = factor(CATEGORY)                   
+  )
+
+```
+
+## Projets approuvés par arrondissement
+
+À l'heure actuelle, il y a une ligne pour chaque chantier de construction approuvé. Nous devons condenser cela pour obtenir le nombre de chantiers de construction selon différentes variables. Nous pouvons le faire en utilisant `group_by()` et `summarize()`
+
+```{r resume-data-borough}
+essentiel_par_arrondissement <- essentiel %>%
+  group_by(ARRONDISSEMENT) %>%
+  summarise(total = n()) %>%
+  mutate(proportion = total / sum(total))
+
+essentiel_par_arrondissement
+```
+
+```{r résumé-parcelle-arrondissement}
+# Ajouter un graphique avec geom_col() ici
+ggplot(essentiel_par_arrondissement, aes(x = ARRONDISSEMENT, y = total)) +
+  geom_col() +
+  labs(title = "nbr de travaux par arrondissement", x = "Arrondissement", y = "nombre") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+```
+
+
+## Projets approuvés par catégorie
+
+```{r resume-data-category}
+# Créer un jeu de données résumé des projets par catégorie
+essentiel_par_categorie <- essentiel %>%
+  group_by(CATEGORY) %>%
+  summarise(total = n()) %>%
+  mutate(proportion = total / sum(total))
+
+essentiel_par_categorie
+```
+
+```{r résumé-catégorie-intrigue}
+# Ajoutez un graphique en forme de sucette (lollipop) ici
+ggplot(essentiel_par_categorie, aes(x = CATEGORY, y = total,color = CATEGORY)) +
+  geom_pointrange(aes(ymin = 0, ymax = total)) +  
+  guides(color = "none") +
+  labs(title = "nombre de travaux par Categories", x = " ", y = "nombre de travaux") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_viridis_d()
+
+```
+
+
+## Projets approuvés dans l'arrondissement et la catégorie
+
+```{r resume-data-heatmap}
+# Créer un ensemble de données résumé des projets par arrondissement et par catégorie
+
+projets_par_arr_cat <- essentiel %>%
+  group_by(ARRONDISSEMENT, CATEGORY) %>%
+  summarise(nombre_de_projets = n(), .groups = "drop") %>%
+  group_by(ARRONDISSEMENT) %>%
+  mutate(proportion = nombre_de_projets / sum(nombre_de_projets))
+
+# Afficher le résultat
+print(projets_par_arr_cat)
+
+```
+
+```{r plot-heatmap}
+# Ajoutez une heatmap ici avec geom_tile()
+
+ggplot(projets_par_arr_cat, aes(x = CATEGORY, y = ARRONDISSEMENT, fill = proportion)) +
+  geom_tile() +
+  labs(title = "Heatmap des proportions de projets",
+       x = "Catégorie",
+       y = "Arrondissement",
+       fill = "Proportion") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+
+```
